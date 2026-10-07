@@ -40,6 +40,7 @@ function App() {
   const [items, setItems] = useState(availableItems)
   const [shoppingCart, setShoppingCart] = useState([])
   const [availableBalance, setavailableBalance] = useState(100)
+  const [warningMessage, setWarningMessage] = useState('')
 
   function handleCartItem(clickedItem) {
     console.log(clickedItem)
@@ -54,14 +55,28 @@ function App() {
       setShoppingCart([...shoppingCart, clickedItem])
       setavailableBalance(availableBalance - clickedItem.price)
     }
+    else if (availableBalance < clickedItem.price) {
+      setWarningMessage('Insufficient funds. Your balance is too low to purchase this item')
+      setTimeout(() => {
+        setWarningMessage('')
+      }, 4000);
+    }
   }
 
-  function handleBalance(){
-    if (clickedItem){
-    setavailableBalance(availableBalance - clickedItem.price)
-    }
-    console.log(setavailableBalance)
+  function handleRemoveFromShoppingCart(clickedCartItem){
+    console.log(clickedCartItem)
+
+    const filteredCartItems = shoppingCart.filter((oneCartItem)=>{
+      return oneCartItem.name !== clickedCartItem.name
+    })
+
+    console.log(filteredCartItems)
+      setShoppingCart(filteredCartItems)
+      setItems([...items, clickedCartItem])
+      setavailableBalance(availableBalance + clickedCartItem.price)
+
   }
+
 
   return (
     <>
@@ -70,7 +85,8 @@ function App() {
       <h1>Sayed Hameds Closet</h1>
 
       <h2>Your Balance: {availableBalance}</h2>
-
+        <p>{warningMessage}</p>
+      
       <h2>Available Items</h2>
         {items.map((oneItem)=>
         <div key={oneItem.name}>
@@ -84,7 +100,7 @@ function App() {
         shoppingCart.map((oneItem)=> 
           <div key={oneItem.name}>
             <p>Name: {oneItem.name} / Price: {oneItem.price}</p>
-            <button>Remove item</button>
+            <button onClick={()=>{handleRemoveFromShoppingCart(oneItem)}}>Remove item</button>
           </div>
         )}
 
